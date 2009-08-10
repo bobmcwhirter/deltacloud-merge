@@ -82,7 +82,6 @@ class MockDriver < DeltaCloud::BaseDriver
     instances = []
     Dir[ "#{STORAGE_ROOT}/instances/*.yml" ].each do |instance_file|
       instance = YAML.load( File.read( instance_file ) )
-      puts "opts ==> #{opts.inspect}"
       if ( instance[:owner_id] == credentials[:name] )
         instance[:id] = File.basename( instance_file, ".yml" )
         instance[:actions] = [ :reboot ]
@@ -125,8 +124,17 @@ class MockDriver < DeltaCloud::BaseDriver
   # Storage Volumes
   #
 
-  def volumes(credentials, opts=nil)
+  def storage_volumes(credentials, opts=nil)
+    check_credentials( credentials )
     volumes = []
+    Dir[ "#{STORAGE_ROOT}/storage_volumes/*.yml" ].each do |storage_volume_file|
+      storage_volume = YAML.load( File.read( storage_volume_file ) )
+      if ( storage_volume[:owner_id] == credentials[:name] )
+        storage_volume[:id] = File.basename( storage_volume_file, ".yml" )
+        volumes << StorageVolume.new( storage_volume )
+      end
+    end
+    volumes = filter_on( volumes, :id, opts )
     volumes
   end
 
@@ -134,8 +142,17 @@ class MockDriver < DeltaCloud::BaseDriver
   # Storage Snapshots
   #
 
-  def snapshots(credentials, opts=nil)
+  def storage_snapshots(credentials, opts=nil)
+    check_credentials( credentials )
     snapshots = []
+    Dir[ "#{STORAGE_ROOT}/storage_snapshots/*.yml" ].each do |storage_snapshot_file|
+      storage_snapshot = YAML.load( File.read( storage_snapshot_file ) )
+      if ( storage_snapshot[:owner_id] == credentials[:name] )
+        storage_snapshot[:id] = File.basename( storage_snapshot_file, ".yml" )
+        snapshots << StorageSnapshot.new( storage_snapshot )
+      end
+    end
+    snapshots = filter_on( snapshots, :id, opts )
     snapshots
   end
 
