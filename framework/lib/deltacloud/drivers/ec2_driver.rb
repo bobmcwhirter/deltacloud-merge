@@ -19,6 +19,8 @@
 require 'deltacloud/base_driver'
 require 'right_aws'
 
+module Deltacloud
+  module Drivers
 class Ec2Driver < DeltaCloud::BaseDriver
 
   #
@@ -323,5 +325,8 @@ class Ec2Driver < DeltaCloud::BaseDriver
     end
   end
 
-
 end
+
+  end
+end
+
